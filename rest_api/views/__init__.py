@@ -1,0 +1,1 @@
+import rest_api.views.UserView
