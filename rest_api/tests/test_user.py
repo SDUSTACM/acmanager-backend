@@ -2,13 +2,13 @@ import json
 
 from django.test import TestCase, Client
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from rest_api.models.User import UserProfile
 
 from django.urls import reverse
 
-
+User = get_user_model()
 class LoginTestCase(TestCase):
 
     def setUp(self):

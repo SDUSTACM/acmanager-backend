@@ -1,5 +1,5 @@
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.response import Response
 
@@ -7,7 +7,7 @@ from rest_api.models.User import UserOJAccount
 from rest_api.serializers.UserSerializer import LoginSerializer, RegisterSerializer, UserOJAccountSerializer, \
     UserOJAccountListSerializer
 
-
+User = get_user_model()
 class LoginView(generics.CreateAPIView):
     """
     用户登陆
