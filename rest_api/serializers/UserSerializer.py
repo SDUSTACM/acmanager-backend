@@ -68,13 +68,8 @@ class UserConfirmSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=20)
 
     def create(self, validated_data):
-        user_role = None
-        try:
-            user = User.objects.get(username=validated_data["username"])
-            user.roles.add(Role.objects.get(identifier=Role.ROLE_IDENTIFIER_TYPE.CONFIRM))
-            # user_role = Role.user.add(user=user, )
-        except User.DoesNotExist as e: # 已经是认证状态了
-            raise e
-        except Exception as e:
-            raise e
+        user = User.objects.get(username=validated_data["username"])
+        expected_role = Role.objects.get(identifier=Role.ROLE_IDENTIFIER_TYPE.CONFIRM)
+        if expected_role not in user.roles.all():
+            user.roles.add(expected_role)
         return user
