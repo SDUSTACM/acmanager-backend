@@ -3,8 +3,9 @@ import json
 from django.test import TestCase, Client
 
 from django.contrib.auth import get_user_model
+from notifications.signals import notify
 
-from rest_api.models.User import UserProfile
+from rest_api.models.User import UserProfile, UserRole
 
 from django.urls import reverse
 
@@ -57,7 +58,7 @@ class RegisterTestCase(TestCase):
           "username": "test",
           "password": "test",
           "profile": {
-           'username': "test",
+            "username": "test",
             "email":"string@qq.com",
             "phone": "562561525",
             "qq": "1512510"
@@ -146,3 +147,65 @@ class UserOJAccountTest(TestCase):
         self.assertEqual(response.status_code, 200, response.data)
         self.assert_oj_account(self.user.oj_accounts, data)
 
+
+class UserConfirmTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        data = {
+            "username": "user",
+            "password": "user",
+            "profile": {
+                "email": "string@qq.com",
+                "phone": "562561525",
+                "qq": "1512510"
+            }
+        }
+        self.client.post(reverse("register-view"), data, content_type="application/json")
+        # from_user = User.objects.create_user(username="from_user", password="from_user")
+        # admin1 = User.objects.create_user(username="admin1", password="admin1")
+        # admin2 = User.objects.create_user(username="admin2", password="admin2")
+        # self.from_user = from_user
+        # self.to_user = [admin1, admin2]
+        # notify.send(self.from_user, recipient=self.to_user, verb='APPLICATION-CONFIRM')
+
+    def login(self, username, password):
+        self.client.logout()
+        response = self.client.login(username=username, password=password)
+
+    def test_agree_user_application_confirm(self):
+        self.login('user', 'user')
+        response = self.client.post(reverse("account-user-confirm-view"), data={"username": "user"})
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertEqual(UserRole.objects.get(user=User.objects.get(username="user")).type, UserRole.ROLE_TYPE.CONFIRM)
+        # response = self.client.get(reverse('notifications:all'))
+        # self.assertEqual(response.status_code, 200)
+        # notifications = response.context['notifications']
+        # confirm_applications = []
+        # for notification in notifications:
+        #     if notification.verb.startswith("APPLICATION-CONFIRM"):
+        #         UserRole.objects.create(user=notification.actor, type=UserRole.ROLE_TYPE.CONFIRM)
+        #         self.assertTrue(notification.actor.is_confirm())
+
+
+class ProfileExploreTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        data = {
+          "username": "test",
+          "password": "test",
+          "profile": {
+            "username": "test",
+            "email":"string@qq.com",
+            "phone": "562561525",
+            "qq": "1512510"
+            }
+        }
+        response = self.client.post(reverse("register-view"), data,
+                                    content_type="application/json")
+        self.assertEqual(response.status_code, 200, response.data)
+        self.client.login(username="test", password="test")
+
+    def test_R_profile(self):
+        response = self.client.get(reverse("users-profile-detail", args=["test"]))
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response.context[""])

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework_swagger',
     'rest_framework',
+    'notifications',
     'rest_api',
 ]
 AUTH_USER_MODEL = 'rest_api.User'

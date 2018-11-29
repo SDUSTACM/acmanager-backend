@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
 
-from rest_api.models.User import UserProfile, UserOJAccount
+from rest_api.models.User import UserProfile, UserOJAccount, UserRole
 
 User = get_user_model()
 
@@ -16,7 +16,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         exclude = ('user', 'username', "id")
-
+        extra_kwargs = {
+            'username': {'required': False},
+            'email': {'required': False},
+            'phone': {'required': False},
+            'qq': {'required': False},
+            'nick': {'required': False},
+        }
 
 class RegisterSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(required=False)
@@ -27,14 +33,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         profile = validated_data.get("profile", None)
+        user_profile = UserProfile()
+        user_profile.username = validated_data["username"]
+        user_profile.nick = validated_data["username"]
         if profile:
-            user_profile = UserProfile()
-            user_profile.username = validated_data["username"]
-            user_profile.email = profile["email"]
-            user_profile.qq = profile["qq"]
-            user_profile.phone = profile["phone"]
-            user_profile.user = user
-            user_profile.save()
+            user_profile.email = profile.get("email", None)
+            user_profile.qq = profile.get("qq", None)
+            user_profile.phone = profile.get("phone", None)
+            user_profile.nick = profile.get("nick", validated_data["username"])
+        user_profile.user = user
+        user_profile.save()
         return user
 
     class Meta:
@@ -56,3 +64,16 @@ class UserOJAccountSerializer(serializers.ModelSerializer):
         extra_kwargs = {'oj_password': {'required': False}}
 
 
+class UserConfirmSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=20)
+
+    def create(self, validated_data):
+        user_role = None
+        try:
+            user = User.objects.get(username=validated_data["username"])
+            user_role = UserRole.objects.create(user=user, type=UserRole.ROLE_TYPE.CONFIRM)
+        except User.DoesNotExist as e: # 已经是认证状态了
+            raise e
+        except Exception as e:
+            raise e
+        return user_role

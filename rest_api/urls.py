@@ -15,12 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.routers import SimpleRouter
 
-from rest_api.views.UserView import LoginView, RegisterView, BindUserOJAccountView
+from rest_api.views.UserView import LoginView, RegisterView, BindUserOJAccountView, UserProfileView, UserConfirmView
 
+router = SimpleRouter()
+router.register('users/profile', UserProfileView, base_name='users-profile')
 urlpatterns = [
     path('login/', LoginView.as_view(), name="login-view"),
     path('register/', RegisterView.as_view(), name="register-view"),
-    path('account/ojaccount', BindUserOJAccountView.as_view(), name="ojaccount-view")
+    path('account/ojaccount', BindUserOJAccountView.as_view(), name="ojaccount-view"),
+    path(r'account/confirm', UserConfirmView.as_view(), name="account-user-confirm-view")
+
     # path('api/', include('rest_api.urls')),
 ]
+urlpatterns += router.urls

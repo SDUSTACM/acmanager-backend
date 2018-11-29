@@ -6,8 +6,8 @@ from collections import namedtuple
 class User(AbstractUser):
     def get_role_list(self):
         role_list = []
-        for role in self.user_role.objects.all():
-            role_type = self.user_role.ROLE_TYPE_REVERSE[self.user_role.type]
+        for role in self.user_role.all():
+            role_type = UserRole.ROLE_TYPE_REVERSE[role.type]
             role_list.append(role_type)
         return role_list
 
@@ -15,7 +15,7 @@ class User(AbstractUser):
     #     return self.user_role.ROLE_TYPE.ROOT in self.get_role_list()
 
     def is_confirm(self):
-        return self.user_role.ROLE_TYPE.CONFIRM in self.get_role_list()
+        return "CONFIRM" in self.get_role_list()
 
 # class ConfirmedUserOperator():
 #     pass
@@ -30,6 +30,7 @@ class UserProfile(models.Model):
     email = models.EmailField(max_length=50)
     phone = models.CharField(max_length=20)
     qq = models.CharField(max_length=20)
+    nick = models.CharField(max_length=30, null=True)
 
 
 class UserOJAccount(models.Model):
@@ -44,3 +45,6 @@ class UserRole(models.Model):
     ROLE_TYPE_REVERSE = ['UNCONFIRM', 'CONFIRM','ROOT']
     user = models.ForeignKey(User, related_name="user_role", on_delete=models.CASCADE)
     type = models.IntegerField()
+
+    class Meta:
+        unique_together = ('user', 'type')

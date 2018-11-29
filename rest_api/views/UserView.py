@@ -1,11 +1,13 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth import get_user_model
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets, mixins
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
-from rest_api.models.User import UserOJAccount
+from rest_api.models.User import UserOJAccount, UserProfile, UserRole
 from rest_api.serializers.UserSerializer import LoginSerializer, RegisterSerializer, UserOJAccountSerializer, \
-    UserOJAccountListSerializer
+    UserOJAccountListSerializer, UserProfileSerializer, UserConfirmSerializer
 
 User = get_user_model()
 class LoginView(generics.CreateAPIView):
@@ -61,3 +63,21 @@ class BindUserOJAccountView(generics.CreateAPIView,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data={"message": "创建成功"}, status=status.HTTP_200_OK)
+
+
+class UserProfileView(mixins.RetrieveModelMixin,
+                   GenericViewSet):
+    queryset = UserProfile
+    lookup_field = "username"
+    serializer_class = UserProfileSerializer
+
+
+class UserConfirmView(generics.CreateAPIView, generics.RetrieveAPIView):
+    queryset = UserRole
+    serializer_class = UserConfirmSerializer
+
+    def create(self, request, *args, **kwargs):
+        seriailzer = UserConfirmSerializer(data=request.data)
+        seriailzer.is_valid()
+        seriailzer.save()
+        return Response(data={"message": "操作成功"}, status=status.HTTP_201_CREATED)
