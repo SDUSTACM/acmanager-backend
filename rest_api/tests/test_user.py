@@ -5,7 +5,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from notifications.signals import notify
 
-from rest_api.models.User import UserProfile, UserRole
+from rest_api.models.User import UserProfile, Role
 
 from django.urls import reverse
 
@@ -161,6 +161,7 @@ class UserConfirmTestCase(TestCase):
             }
         }
         self.client.post(reverse("register-view"), data, content_type="application/json")
+        Role.objects.create(identifier="CONFIRM", name="认证用户")
         # from_user = User.objects.create_user(username="from_user", password="from_user")
         # admin1 = User.objects.create_user(username="admin1", password="admin1")
         # admin2 = User.objects.create_user(username="admin2", password="admin2")
@@ -176,7 +177,7 @@ class UserConfirmTestCase(TestCase):
         self.login('user', 'user')
         response = self.client.post(reverse("account-user-confirm-view"), data={"username": "user"})
         self.assertEqual(response.status_code, 201, response.data)
-        self.assertEqual(UserRole.objects.get(user=User.objects.get(username="user")).type, UserRole.ROLE_TYPE.CONFIRM)
+        self.assertIn(Role.ROLE_IDENTIFIER_TYPE.CONFIRM, User.objects.get(username="user").get_role_list())
         # response = self.client.get(reverse('notifications:all'))
         # self.assertEqual(response.status_code, 200)
         # notifications = response.context['notifications']

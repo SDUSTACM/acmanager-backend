@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
 
-from rest_api.models.User import UserProfile, UserOJAccount, UserRole
+from rest_api.models.User import UserProfile, UserOJAccount, Role
 
 User = get_user_model()
 
@@ -71,9 +71,10 @@ class UserConfirmSerializer(serializers.Serializer):
         user_role = None
         try:
             user = User.objects.get(username=validated_data["username"])
-            user_role = UserRole.objects.create(user=user, type=UserRole.ROLE_TYPE.CONFIRM)
+            user.roles.add(Role.objects.get(identifier=Role.ROLE_IDENTIFIER_TYPE.CONFIRM))
+            # user_role = Role.user.add(user=user, )
         except User.DoesNotExist as e: # 已经是认证状态了
             raise e
         except Exception as e:
             raise e
-        return user_role
+        return user

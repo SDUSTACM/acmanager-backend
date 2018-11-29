@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from rest_api.models.User import UserOJAccount, UserProfile, UserRole
+from rest_api.models.User import UserOJAccount, UserProfile, Role
 from rest_api.serializers.UserSerializer import LoginSerializer, RegisterSerializer, UserOJAccountSerializer, \
     UserOJAccountListSerializer, UserProfileSerializer, UserConfirmSerializer
 
@@ -73,7 +73,7 @@ class UserProfileView(mixins.RetrieveModelMixin,
 
 
 class UserConfirmView(generics.CreateAPIView, generics.RetrieveAPIView):
-    queryset = UserRole
+    queryset = Role
     serializer_class = UserConfirmSerializer
 
     def create(self, request, *args, **kwargs):

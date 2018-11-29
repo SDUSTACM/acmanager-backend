@@ -5,17 +5,25 @@ from collections import namedtuple
 
 class User(AbstractUser):
     def get_role_list(self):
+        """
+        获取角色列表
+        :return:
+        """
         role_list = []
-        for role in self.user_role.all():
-            role_type = UserRole.ROLE_TYPE_REVERSE[role.type]
-            role_list.append(role_type)
+        for role in self.roles.all():
+            role_identifier = role.identifier
+            role_list.append(role_identifier)
         return role_list
 
     # def has_root_role(self):
     #     return self.user_role.ROLE_TYPE.ROOT in self.get_role_list()
 
     def is_confirm(self):
-        return "CONFIRM" in self.get_role_list()
+        """
+        是否是已验证用户
+        :return:
+        """
+        return Role.ROLE_IDENTIFIER_TYPE.CONFIRM in self.get_role_list()
 
 # class ConfirmedUserOperator():
 #     pass
@@ -40,11 +48,12 @@ class UserOJAccount(models.Model):
     oj_password = models.CharField(max_length=20)
 
 
-class UserRole(models.Model):
-    ROLE_TYPE = namedtuple('ROLE_TYPE', ['UNCONFIRM', 'CONFIRM', 'ROOT'])(0, 1, 2)
-    ROLE_TYPE_REVERSE = ['UNCONFIRM', 'CONFIRM','ROOT']
-    user = models.ForeignKey(User, related_name="user_role", on_delete=models.CASCADE)
-    type = models.IntegerField()
+class Role(models.Model):
+    ROLE_IDENTIFIER_TYPE = namedtuple('ROLE_IDENTIFIER_TYPE', ['UNCONFIRM', 'CONFIRM', 'ROOT'])('UNCONFIRM', 'CONFIRM', 'ROOT')
+    user = models.ManyToManyField(User, related_name="roles")
+    name = models.CharField(max_length=30)
+    identifier = models.CharField(max_length=20)
+    # type = models.IntegerField()
 
     class Meta:
-        unique_together = ('user', 'type')
+        pass
