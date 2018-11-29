@@ -4,3 +4,4 @@ manage.py
 venv/
 __pycache__
 migrations
+plan.md
