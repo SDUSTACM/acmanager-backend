@@ -24,6 +24,7 @@ schema_view = get_swagger_view(title='Acmanager API')
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('api/', include('rest_api.urls')),
-    path('inbox/notifications/', include("notifications.urls", namespace='notifications')),
+    path('crawl/', include('crawl.urls')),
+    path('notification/', include('notification.urls')),
     path(r'docs/', schema_view)
 ]

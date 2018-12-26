@@ -1,0 +1,19 @@
+{
+  "summary": [
+    {
+      "id": "PupleBook",
+      "title": "紫书(算法竞赛入门经典)",
+      "contain": ["RMJD"]
+    },
+    {
+      "id": "BlueBook",
+      "title": "蓝书(算法竞赛训练指南)",
+      "contain": ["XLZN"]
+    },
+    {
+      "id": "PupleBlueBook",
+      "title": "紫书+蓝书",
+      "contain": ["RMJD","XLZN"]
+    }
+  ]
+}

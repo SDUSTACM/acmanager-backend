@@ -16,17 +16,45 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
+from rest_framework_nested import routers
 
-from rest_api.views.UserView import LoginView, RegisterView, BindUserOJAccountView, UserProfileView, UserConfirmView
+from rest_api.views.NotificationView import live_all_notification_list
+from rest_api.views.UserView import LoginView, RegisterView, UserProfileView, ApplicationView, \
+    SessionView, LogoutView, UserManagerView, RoleManagerView
+from rest_api.views.TrainingView import TrainingView, TrainingStageView, StageContestView
 
-router = SimpleRouter()
-router.register('users/profile', UserProfileView, base_name='users-profile')
+router = routers.SimpleRouter()
+# router.register('users/profile', UserProfileView, base_name='users-profile')
+router.register('trainings', TrainingView, base_name='training-view')
+# router.register('stages', StageView, base_name='stage-view')
+
+
+training_router = routers.NestedSimpleRouter(router, r'trainings', lookup='training')
+training_router.register(r'stages', TrainingStageView, base_name='training-stage-view')
+
+stage_router = routers.NestedSimpleRouter(training_router, r'stages', lookup='stage')
+stage_router.register(r'contests', StageContestView, base_name='training-stage-contest-view')
+
+admin_router = routers.SimpleRouter()
+admin_router.register(r'users', UserManagerView, base_name="user-manager-view")
+admin_router.register(r'roles', RoleManagerView, base_name="role-manager-view")
+
+user_router = routers.SimpleRouter()
+user_router.register(r'profile', UserProfileView, base_name="user-profile-view")
+
 urlpatterns = [
+    # path('notifications/', live_all_notification_list, name='notifications'),
+    path('admin/', include(admin_router.urls)),
+    path('user/', include(user_router.urls)),
     path('login/', LoginView.as_view(), name="login-view"),
+    path('logout/', LogoutView.as_view(), name="logout-view"),
+    path('session/', SessionView.as_view(), name="session-view"),
     path('register/', RegisterView.as_view(), name="register-view"),
-    path('account/ojaccount', BindUserOJAccountView.as_view(), name="ojaccount-view"),
-    path(r'account/confirm', UserConfirmView.as_view(), name="account-user-confirm-view")
+    path(r'application/', ApplicationView.as_view(), name="account-user-confirm-view"),
+    path(r'crawl/', include("crawl.urls"))
 
     # path('api/', include('rest_api.urls')),
 ]
 urlpatterns += router.urls
+urlpatterns += training_router.urls
+urlpatterns += stage_router.urls

@@ -10,22 +10,45 @@ from rest_api.models.User import UserProfile, Role
 from django.urls import reverse
 
 User = get_user_model()
-class LoginTestCase(TestCase):
 
+
+class LoginTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-
-    def test_login(self):
-
-        user_info = {
+        self.user_info = {
             "username": "test",
             "password": "test",
         }
-        user = User.objects.create_user(*user_info)
-        url = reverse('login-view')
-        response = self.client.post(url, user_info, content_type ="application/json")
-        self.assertTrue(user.is_authenticated, "登陆失败")
+        url = reverse('register-view')
+        self.client.post(url, self.user_info, content_type="application/json")
 
+    def test_login_success(self):
+        url = reverse('login-view')
+        response = self.client.post(url, self.user_info, content_type ="application/json")
+        user = response.wsgi_request.user
+        self.assertTrue(user.is_authenticated, response.data)
+
+    def test_login_username_not_exist(self):
+        url = reverse("login-view")
+        response = self.client.post(url, {
+            "username": "tset1",
+            "password": "55555"
+        }, content_type="application/json")
+        self.assertEqual(response.status_code, 403, response.data)
+        user = response.wsgi_request.user
+        self.assertFalse(user.is_authenticated, response.data)
+
+
+    def test_login_password_wrong(self):
+        url = reverse("login-view")
+        response = self.client.post(url, {
+            "username": "test",
+            "password": "wrong"
+        }, content_type="application/json")
+        self.assertEqual(response.status_code, 403)
+
+        user = response.wsgi_request.user
+        self.assertFalse(user.is_authenticated, response.data)
 
 class RegisterTestCase(TestCase):
     """
