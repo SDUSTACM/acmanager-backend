@@ -39,3 +39,21 @@ def get_all_notifications(username):
     """
     response =requests.get("http://127.0.0.1:8008/notification/all/%s" % username)
     return response.json()
+
+
+def send_operator(id, status):
+    response = requests.put("http://127.0.0.1:8008/notification/operator/%s" % id, json={"status": status})
+    return response.status_code >= 200 and response.status_code < 300
+
+
+def get_notification(id):
+    """
+    获取指定ID的通知
+    :param id: 通知ID
+    :return:
+    """
+    response = requests.get("http://127.0.0.1:8008/notification/detail/%s" % id)
+    if response.status_code >= 200 and response.status_code < 300:
+        return response.json()
+    else:
+        return None

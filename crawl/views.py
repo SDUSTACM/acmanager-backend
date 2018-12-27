@@ -17,6 +17,7 @@ from django.contrib.auth import get_user_model
 
 from crawl.serializer import UserOJAccountSerializer, UserOJAccountListSerializer
 from crawl.utils import get_ac_problem, get_ac_problem_count
+from rest_api.models.User import Role
 
 User = get_user_model()
 
@@ -76,7 +77,7 @@ class SolveCountView(APIView):
         return Response({"data": response_data}, status=status.HTTP_200_OK)
 
 def get_solve_count_list():
-    users = User.objects.all()
+    users = Role.objects.get(identifier="CONFIRM").get_user_list()
     results = []
     for user in users:
         problem_set = get_ac_problem(user)

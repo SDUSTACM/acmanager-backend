@@ -18,7 +18,7 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 from rest_framework_nested import routers
 
-from rest_api.views.NotificationView import MessageView
+from rest_api.views.NotificationView import MessageView, VerifyView
 from rest_api.views.UserView import LoginView, RegisterView, UserProfileView, ApplicationView, \
     SessionView, LogoutView, UserManagerView, RoleManagerView
 from rest_api.views.TrainingView import TrainingView, TrainingStageView, StageContestView
@@ -51,6 +51,7 @@ urlpatterns = [
     path('session/', SessionView.as_view(), name="session-view"),
     path('register/', RegisterView.as_view(), name="register-view"),
     path(r'application/<type>/', ApplicationView.as_view(), name="account-user-confirm-view"),
+    path(r'verify/<pk>/', VerifyView.as_view(), name="verify-view"),
     path(r'message/', MessageView.as_view(), name="message-view"),
     path(r'crawl/', include("crawl.urls"))
 

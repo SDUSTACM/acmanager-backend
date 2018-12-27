@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, status
 from rest_framework import viewsets
 # Create your views here.
@@ -10,17 +10,15 @@ from notification.serializers import NotificationSerializer, NotificationCreateS
     NotificationOperatorStatusSerializer
 
 
-class NotificationView(generics.RetrieveAPIView):
+class NotificationView(generics.ListAPIView):
     def get_queryset(self):
-        return Notification.objects.all()
+        return Notification.objects.filter(to_user__username=self.kwargs["username"])
 
-    def get_object(self):
-        username = self.kwargs["username"]
-        return self.get_queryset().filter(to_user__username=username)
+    serializer_class = NotificationSerializer
 
-    def get_serializer(self, *args, **kwargs):
-        return super().get_serializer(*args, **kwargs, many=True)
 
+class NotificationDetailView(generics.RetrieveAPIView):
+    queryset = Notification
     serializer_class = NotificationSerializer
 
 
@@ -48,13 +46,31 @@ class NotificationMarkUnReadView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class NotificationOperatorView(generics.UpdateAPIView):
+class NotificationOperatorView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
-        return NotificationOperatorStatus.objects.all()
+        return NotificationBase.objects.all()
 
-    lookup_url_kwarg = "pk"
-    lookup_field = "notification__id"
     serializer_class = NotificationOperatorStatusSerializer
 
-    def perform_update(self, serializer):
-        serializer.save(notification=NotificationBase.objects.get(id=self.kwargs["pk"]))
+    def put(self, request, *args, **kwargs):
+        notification = self.get_object()
+        # notification = NotificationBase.objects.get(id=self.kwargs["pk"])
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(notification=notification)
+        return Response(serializer.data)
+
+
+    def retrieve(self, request, *args, **kwargs):
+        notification = self.get_object()
+        instance = get_object_or_404(NotificationOperatorStatus, notification=notification)
+        # notification = NotificationBase.objects.get(id=self.kwargs["pk"])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        notification = self.get_object()
+        instance = get_object_or_404(NotificationOperatorStatus, notification=notification)
+        # notification = NotificationBase.objects.get(id=self.kwargs["pk"])
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

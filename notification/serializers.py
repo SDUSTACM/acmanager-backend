@@ -25,6 +25,12 @@ class NotificationSerializer(serializers.ModelSerializer):
         id = ret.pop("id")
         notification = ret.pop("notification")
         base_id = notification.pop("id")
+        try:
+            status = NotificationOperatorStatus.objects.get(notification_id=base_id).status
+            ret["status"] = status
+        except NotificationOperatorStatus.DoesNotExist as e:
+            pass
+
         return OrderedDict(id=id, base_id=base_id, **notification, **ret)
 
 
@@ -60,6 +66,7 @@ class NotificationOperatorStatusSerializer(serializers.ModelSerializer):
         }
 
     def save(self, **kwargs):
+        # TODO: 是否需要考虑多次更改状态的情况？
         notification = NotificationOperatorStatus.objects.filter(notification=kwargs.get("notification"))
         if notification.exists():
             return notification.update(**self.validated_data)
