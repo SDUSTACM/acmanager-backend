@@ -90,7 +90,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.Serializer):
-
     def validate_identifier(self, value):
         if value.upper() not in Role.ROLE_IDENTIFIER_TYPE:
             raise serializers.ValidationError("申请的类型有误")
@@ -101,10 +100,10 @@ class ApplicationSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         # Role.ROLE_IDENTIFIER_TYPE.CONFIRM
-        user = User.objects.get(username=validated_data["username"])
-        expected_role = Role.objects.get(identifier=validated_data["identifier"].upper())
-        if expected_role not in user.roles.all():
-            user.roles.add(expected_role)
+        # user = User.objects.get(username=validated_data["username"])
+        # expected_role = Role.objects.get(identifier=validated_data["identifier"].upper())
+        # if expected_role not in user.roles.all():
+        #     user.roles.add(expected_role)
         return user
 
 

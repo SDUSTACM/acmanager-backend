@@ -5,10 +5,12 @@ from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from rest_api.models.User import UserProfile, Role
 from rest_api.permissions import IsAdminRole
+from rest_api.request import send_application
 from rest_api.serializers.UserSerializer import LoginSerializer, RegisterSerializer, \
     UserProfileSerializer, ApplicationSerializer, SessionSerializer, UserManagerSerializer, RoleManagerSerializer, \
     RoleListManagerSerializer, RoleCreateUserManagerSerializer
@@ -105,14 +107,15 @@ class UserProfileView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericVie
         serializer.save()
         return Response({"message": "更新成功"}, status=status.HTTP_200_OK)
 
-class ApplicationView(generics.CreateAPIView, generics.RetrieveAPIView):
-    queryset = Role
-    serializer_class = ApplicationSerializer
-
-    def create(self, request, *args, **kwargs):
-        seriailzer = ApplicationSerializer(data=request.data)
-        seriailzer.is_valid(raise_exception=True )
-        seriailzer.save()
+class ApplicationView(APIView):
+    def get(self, request, *args, **kwargs):
+        application_type = kwargs.get("type")
+        if application_type not in Role.ROLE_IDENTIFIER_TYPE:
+            return Response(data={"message" : "角色不合法"}, status=status.HTTP_400_BAD_REQUEST)
+        # seriailzer = ApplicationSerializer(data=request.data)
+        send_application(request.user, application_type)
+        # seriailzer.is_valid(raise_exception=True )
+        # seriailzer.save()
         return Response(data={"message": "操作成功"}, status=status.HTTP_201_CREATED)
 
 

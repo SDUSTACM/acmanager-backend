@@ -10,9 +10,16 @@ from notification.serializers import NotificationSerializer, NotificationCreateS
     NotificationOperatorStatusSerializer
 
 
-class NotificationView(generics.ListAPIView):
+class NotificationView(generics.RetrieveAPIView):
     def get_queryset(self):
-        return Notification.objects.filter(to_user=self.request.user)
+        return Notification.objects.all()
+
+    def get_object(self):
+        username = self.kwargs["username"]
+        return self.get_queryset().filter(to_user__username=username)
+
+    def get_serializer(self, *args, **kwargs):
+        return super().get_serializer(*args, **kwargs, many=True)
 
     serializer_class = NotificationSerializer
 

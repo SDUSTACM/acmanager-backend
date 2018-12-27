@@ -1,6 +1,8 @@
 from django.test import Client
 from rest_framework.reverse import reverse
 
+from rest_api.models.User import Role
+
 
 def get_login_client(user_info):
     """
@@ -35,3 +37,19 @@ def login_user(client, username, password):
     response = client.post(reverse("login-view"), {"username": username, "password": password},
                            content_type="application/json")
     return response.wsgi_request.user
+
+
+def create_inital_roles():
+    """
+    创建系统的角色
+    :param client:
+    :return:
+    """
+    Role.objects.create(identifier="NOTIFICATION", name="系统通知")
+    Role.objects.create(identifier="CONFIRM", name="认证用户")
+    Role.objects.create(identifier="ADMIN", name="管理员")
+    Role.objects.create(identifier="ROOT", name="超级用户")
+
+
+def add_user_to_role(user, role):
+    Role.objects.get(identifier=role).add_user(user)

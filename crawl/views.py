@@ -15,7 +15,7 @@ from crawl.global_share_data import struct_dict, score_dict
 from crawl.models import VjudgeSolveList, UserOJAccount, UVASolveList
 from django.contrib.auth import get_user_model
 
-from crawl.serializer import UserOJAccountSerializer
+from crawl.serializer import UserOJAccountSerializer, UserOJAccountListSerializer
 from crawl.utils import get_ac_problem, get_ac_problem_count
 
 User = get_user_model()
@@ -101,8 +101,10 @@ class UserOJAccountView(generics.RetrieveUpdateAPIView):
     def get_queryset(self):
         return UserOJAccount.objects.all()
 
-    def get_serializer(self, *args, **kwargs):
-        return UserOJAccountSerializer(*args, **kwargs, many=True)
+    def get_serializer_class(self):
+        return UserOJAccountListSerializer
+    # def get_serializer(self, *args, **kwargs):
+    #     return self.get_serializer_class()(*args, **kwargs, many=True)
 
     def get_object(self):
         instance = self.get_queryset().filter(user__username=self.kwargs.get("username"))
