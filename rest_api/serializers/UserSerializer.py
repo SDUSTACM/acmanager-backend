@@ -44,8 +44,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('username', "nick", "class_name", "is_confirm", "email")
         extra_kwargs = {
             'username': {'read_only': True},
-            'is_confirm': {'read_only': True}
-            # 'email': {'read_only': False},
+            'is_confirm': {'read_only': True},
+            'email': {'allow_blank': True},
             # 'phone': {'read_only': False},
             # 'qq': {'read_only': False},
             # 'nick': {'read_only': False},
