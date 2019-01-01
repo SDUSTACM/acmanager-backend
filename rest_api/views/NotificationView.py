@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_api.models.User import Role
-from rest_api.request import get_all_notifications, send_operator, get_notification
+from rest_api.request import get_all_notifications, send_operator, get_notification, send_message
 from django.contrib.auth import get_user_model
 
 from rest_api.serializers.NotificationSerializer import VerifySerializer
@@ -29,5 +29,7 @@ class VerifyView(generics.CreateAPIView):
         if notification["object"].upper() == "CONFIRM" and data["status"] == "AGREE":
             Role.objects.get(identifier="CONFIRM").user.add(User.objects.get(username=notification["from_user"]))
         send_operator(notification["base_id"], data["status"])
+        res_data = send_message(from_user=request.user, to_user=notification["from_user"], verb="ADUIT", obj="CONFIRM")
+        send_operator(res_data["notification"]["id"], data["status"])
         # 当无返回体时，返回状态码必须是204
         return Response(status=status.HTTP_204_NO_CONTENT)

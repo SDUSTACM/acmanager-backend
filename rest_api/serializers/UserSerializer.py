@@ -14,13 +14,17 @@ class LoginSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'password')
 
+class RoleField(serializers.Field):
+    def to_representation(self, value):
+        return [item.identifier for item in value.all()]
 
 class SessionSerializer(serializers.ModelSerializer):
     nick = serializers.CharField(source="profile.nick", read_only=True)
+    roles = RoleField()
 
     class Meta:
         model = User
-        fields = ('username', 'nick')
+        fields = ('username', 'nick', 'roles')
 
 
 class IsConfirmField(serializers.Field):

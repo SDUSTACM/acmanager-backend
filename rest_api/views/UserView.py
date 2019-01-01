@@ -10,7 +10,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from rest_api.models.User import UserProfile, Role
 from rest_api.permissions import IsAdminRole
-from rest_api.request import send_application
+from rest_api.request import send_message
 from rest_api.serializers.UserSerializer import LoginSerializer, RegisterSerializer, \
     UserProfileSerializer, ApplicationSerializer, SessionSerializer, UserManagerSerializer, RoleManagerSerializer, \
     RoleListManagerSerializer, RoleCreateUserManagerSerializer
@@ -113,7 +113,7 @@ class ApplicationView(APIView):
         if application_type not in Role.ROLE_IDENTIFIER_TYPE:
             return Response(data={"message" : "角色不合法"}, status=status.HTTP_400_BAD_REQUEST)
         # seriailzer = ApplicationSerializer(data=request.data)
-        send_application(request.user, application_type)
+        send_message(from_user=request.user, to_role="ADMIN", verb="APPLICATION", obj=application_type)
         # seriailzer.is_valid(raise_exception=True )
         # seriailzer.save()
         return Response(data={"message": "操作成功"}, status=status.HTTP_201_CREATED)

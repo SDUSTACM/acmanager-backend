@@ -21,6 +21,30 @@ from rest_api.models.User import Role
 
 User = get_user_model()
 
+class SolveListView(APIView):
+    def get(self, request, **kwargs):
+        user = User.objects.get(username=kwargs.get("username"))
+        vjudge_account = UserOJAccount.objects.filter(oj_name="VJUDGE", user=user)
+        if vjudge_account.exists():
+            vjuge_data = Vjudge_Crawler.crawl_vjudge_solve_list(vjudge_account.first().oj_username)
+            VjudgeSolveList.objects.filter(user=user).delete()
+            objs = []
+            for item in vjuge_data:
+                oj_name, p_id = item.split("-")
+                objs.append(VjudgeSolveList(oj_name=oj_name, p_id=p_id, user=user))
+            VjudgeSolveList.objects.bulk_create(objs=objs)
+        uva_account = UserOJAccount.objects.filter(oj_name="VJUDGE", user=user)
+        if uva_account.exists():
+            uva_data = UVA_Crawler.crawl_uva_solve_list(uva_account.first().oj_username)
+            UVASolveList.objects.filter(user=user).delete()
+            objs = []
+            for item in uva_data:
+                oj_name, p_id = item.split("-")
+                objs.append(UVASolveList(oj_name=oj_name, p_id=p_id, user=user))
+            UVASolveList.objects.bulk_create(objs=objs)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class VjudgeSolveListView(APIView):
     def get(self, request, **kwargs):
@@ -33,7 +57,7 @@ class VjudgeSolveListView(APIView):
             oj_name, p_id = item.split("-")
             objs.append(VjudgeSolveList(oj_name=oj_name, p_id=p_id, user=user))
         VjudgeSolveList.objects.bulk_create(objs=objs)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UVASolveListView(APIView):
@@ -47,7 +71,7 @@ class UVASolveListView(APIView):
             oj_name, p_id = item.split("-")
             objs.append(UVASolveList(oj_name=oj_name, p_id=p_id, user=user))
         UVASolveList.objects.bulk_create(objs=objs)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SolveCountView(APIView):

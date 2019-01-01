@@ -40,5 +40,5 @@ class UserOJAccount(models.Model):
     user = models.ForeignKey(User, related_name="oj_accounts", on_delete=models.CASCADE)
     oj_name = models.CharField(max_length=10)
     oj_username = models.CharField(max_length=20)
-    oj_password = models.CharField(max_length=20)
+    oj_password = models.CharField(max_length=20, null=True)
 

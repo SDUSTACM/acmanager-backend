@@ -7,6 +7,13 @@ class UserOJAccountSerializer(serializers.ModelSerializer):
         # list_serializer_class = UserOJAccountListSerializer
         model = UserOJAccount
         fields = ('oj_name', 'oj_username', 'oj_password')
+        extra_kwargs = {
+            'oj_password': {'required': False}
+            # 'email': {'read_only': False},
+            # 'phone': {'read_only': False},
+            # 'qq': {'read_only': False},
+            # 'nick': {'read_only': False},
+        }
 
 
 class UserOJAccountListSerializer(serializers.ListSerializer):

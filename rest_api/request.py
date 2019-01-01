@@ -10,27 +10,33 @@ def model_to_username(model):
     """
     return model.username
 
-def send_application(from_user, object):
+def send_message(from_user, verb, **kwargs):
     """
     向消息子系统发送申请请求
     :param from_user: 源用户
     :param verb: 动词，即请求类型
     :return:如果请求成功，则返回True
     """
-    to_uesr = []
-    # if verb == "APPLICATION-CONFIRM"
-    if True:
-        to_uesr = [model_to_username(model) for model in Role.objects.get(identifier="ADMIN").get_user_list()]
+    to_user = kwargs.get("to_user", None)
+    to_role = kwargs.get("to_role", None)
+    obj = kwargs.get("obj", None)
+    assert not (to_user and to_role),"不能同时给to_user和to_role赋值"
+    users = []
+    if to_user:
+        users = [to_user]
+    else:
+        # if verb == "APPLICATION-CONFIRM"
+        users = [model_to_username(model) for model in Role.objects.get(identifier=to_role).get_user_list()]
     data = {
-        "to_user": to_uesr,
+        "to_user": users,
         "notification": {
-            "verb": "APPLICATION",
-            "object": object,
+            "verb": verb,
+            "object": obj,
             "from_user": model_to_username(from_user)
         }
     }
     data = requests.post("http://127.0.0.1:8008/notification/create/", json=data)
-    return True
+    return data.json()
 
 def get_all_notifications(username):
     """
