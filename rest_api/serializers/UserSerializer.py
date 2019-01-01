@@ -109,17 +109,51 @@ class ApplicationSerializer(serializers.Serializer):
         # if expected_role not in user.roles.all():
         #     user.roles.add(expected_role)
         return user
+#
+# class UserRoleSerializer(serializers.ModelSerializer):
+#     roles = serializers.SlugRelatedField(slug_field='identifier', queryset=Role.objects.all())
+#
+#     class Meta:
+#         model = User
+#         fields = ('roles', )
+#
+#     def to_representation(self, instance):
+#         ret = super().to_representation(instance)
+#         return ret["roles"]
+#
+#     def to_internal_value(self, data):
+#         super().to_internal_value(data)
+class RoleField(serializers.Field):
+    def to_internal_value(self, data):
+        super().to_internal_value(data)
+
+    def to_representation(self, value):
+        super().to_representation(value)
 
 
 class UserManagerSerializer(serializers.ModelSerializer):
+
+    roles = serializers.ListField(source="user.roles.all",
+        child=serializers.SlugRelatedField(slug_field="identifier", queryset=Role.objects.all())
+                                  )
     class Meta:
         model = UserProfile
-        fields = ('id', 'username', 'nick', 'class_name')
+        fields = ('id', 'username', 'nick', 'class_name', 'roles')
         extra_kwargs = {
             "id": {
                 "read_only": True
             }
         }
+
+    def update(self, instance, validated_data):
+        userprofile = instance
+        userprofile.username = validated_data.get("username")
+        userprofile.nick = validated_data.get("nick")
+        userprofile.class_name = validated_data.get("class_name")
+        user = validated_data.get("user")
+        userprofile.user.roles.set(user["roles"]["all"])
+        userprofile.save()
+        return userprofile
 
 
 class RoleListManagerSerializer(serializers.ModelSerializer):
