@@ -1,5 +1,5 @@
 from collections import OrderedDict
-
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
@@ -148,3 +148,18 @@ class RoleCreateUserManagerSerializer(serializers.Serializer):
         ret = OrderedDict()
         ret["user"] = User.objects.get(username=data["user"])
         return ret
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=20)
+    new_password = serializers.CharField(max_length=20)
+
+    def validate_old_password(self, value):
+        """
+        Check that the blog post is about Django.
+        """
+        request = self.context["request"]
+        user = request.user
+        if not user.check_password(value):
+            raise serializers.ValidationError("原密码输入错误！")
+        return value

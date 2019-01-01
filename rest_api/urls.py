@@ -20,7 +20,7 @@ from rest_framework_nested import routers
 
 from rest_api.views.NotificationView import MessageView, VerifyView
 from rest_api.views.UserView import LoginView, RegisterView, UserProfileView, ApplicationView, \
-    SessionView, LogoutView, UserManagerView, RoleManagerView
+    SessionView, LogoutView, UserManagerView, RoleManagerView, ResetPasswordView
 from rest_api.views.TrainingView import TrainingView, TrainingStageView, StageContestView
 
 router = routers.SimpleRouter()
@@ -48,6 +48,7 @@ urlpatterns = [
     path('user/', include(user_router.urls)),
     path('login/', LoginView.as_view(), name="login-view"),
     path('logout/', LogoutView.as_view(), name="logout-view"),
+    path('resetpassword/', ResetPasswordView.as_view(), name="resetpassword-view"),
     path('session/', SessionView.as_view(), name="session-view"),
     path('register/', RegisterView.as_view(), name="register-view"),
     path(r'application/<type>/', ApplicationView.as_view(), name="account-user-confirm-view"),

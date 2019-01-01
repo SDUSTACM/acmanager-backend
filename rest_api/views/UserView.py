@@ -13,7 +13,7 @@ from rest_api.permissions import IsAdminRole
 from rest_api.request import send_message
 from rest_api.serializers.UserSerializer import LoginSerializer, RegisterSerializer, \
     UserProfileSerializer, ApplicationSerializer, SessionSerializer, UserManagerSerializer, RoleManagerSerializer, \
-    RoleListManagerSerializer, RoleCreateUserManagerSerializer
+    RoleListManagerSerializer, RoleCreateUserManagerSerializer, ResetPasswordSerializer
 
 User = get_user_model()
 class LoginView(generics.CreateAPIView):
@@ -162,3 +162,15 @@ class RoleManagerView(mixins.RetrieveModelMixin,
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+
+class ResetPasswordView(generics.CreateAPIView):
+    queryset = User
+    serializer_class = ResetPasswordSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
