@@ -33,7 +33,7 @@ class SolveListView(APIView):
                 oj_name, p_id = item.split("-")
                 objs.append(VjudgeSolveList(oj_name=oj_name, p_id=p_id, user=user))
             VjudgeSolveList.objects.bulk_create(objs=objs)
-        uva_account = UserOJAccount.objects.filter(oj_name="VJUDGE", user=user)
+        uva_account = UserOJAccount.objects.filter(oj_name="UVA", user=user)
         if uva_account.exists():
             uva_data = UVA_Crawler.crawl_uva_solve_list(uva_account.first().oj_username)
             UVASolveList.objects.filter(user=user).delete()

@@ -41,6 +41,6 @@ def crawl_uva_solve_list(uva_userid):
     status_list = _crawl_uva_status(uva_userid)
     res = set([str("UVA" + "-" + str(id_to_number[record[1]]))
                      for record in status_list
-                     if record[2] == "90"] )
+                     if record[2] == 90] )
     return res
 
