@@ -1,58 +1,96 @@
-#这是一个教你怎么配ACManager的教程
+# acmanager-backend安装启动教程
 
-######好像是sumover@zz写的
+###### 作者  sumover@张泽
 
-~~您配吗?您不配!~~
+本教程分为以下几个内容
 
-####然后首先是大体需要的东西
+1. 代码的基本管理与使用
 
-    1. 别告诉我你连pycharm都没有!!!  
-        解决方案:百度:没有学校邮箱怎么注册获得Jetbrain学生认证
-    2. 这个md到底是被学长放在哪个文件的我也不太清楚,为了方便我给你们地址
-        https://github.com/SDUSTACM/acmanager-backend
-    3. 用git然后clone一下就好,网速慢的同学可以去上个厕所
-    4.clone成功之后接下一个教程
+2. 虚拟环境的搭建
 
-####需要的基础环境
-    python3.6
-    pip
-    mysql(个人推荐在自己电脑上安好,学长推荐在bash下安好)
-    亲学长亲情推荐:安个bash吧~
-
-在你的电脑上创建名为ACManager的database
-
-接下来创建虚拟环境venv
-
-####用pycharm搭一个虚拟环境
-
-详情见这个教程:https://jingyan.baidu.com/article/48b558e3ffeb667f39c09a41.html
-
-File->settings...->Project:acmanager-backend->Project   interpreter
-
-然后右上角似乎有一个齿轮的符号,点之.然后点那个add
-
-选第一个virtualvenv environment 选择new然后选在你的工作区内.然后OK
-
-然后你的project里似乎会出现一个venv文件夹,后面还跟着个小字 library root
-
-然后在pycharm里打开那个requirement.txt 然后会提醒你安装些啥啥啥.
-
-反正你乖乖听话安装就对了
+3. 服务器的配置与使用
 
 ***
 
-然后我们去Edit configuration...
+### 代码的管理与使用
 
-Host那个地方后面注明是8008
+相信你看到本教程的时候通常情况下是知道如何正确使用git以及如何正确的管理您的代码的.在此不多赘述.
 
-然后environment variables那个地方添加一个DJANGO_SETTINGS_MODULE   值为acmanager.settings
+仅给出相关教程:
 
-Python interpreter 改成你自己的那个虚拟机(就是刚才咱新添加的)
+[史上最浅显易懂的Git教程！](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000)
 
-working dictionary 改成acmanager-backend
+在您继续读本教程之前,我默认认为您是已经基本掌握了Python的语法知识,并对pip等包管理工具有所了解.
 
-别的应该没有了
+仅给出相关教程:
 
-跑他丫的
+[廖雪峰的Python教程](https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000)
 
-~~辣鸡学弟现在去思考怎么pr去了~~
+在继续阅读本教程之前,请阅读如下说明:
+
+如果您使用的是windows系统,我建议您升级到win10.win10下可以使用一个linux子系统.详情咨询wzh学长
+
+如果使用的是其他系统,欢迎联系本教程的作者   @sumover    进行深入灵魂的探讨
+
+关于如何在windows下使用bash:[如何在Windows 10安装和使用Linux的Bash shell](https://jingyan.baidu.com/article/e73e26c0be8b6624adb6a7ba.html)
+
+如果您的计算机上安装的数据库是MySQL,我建议您在本工程的 /acmanager/settings.py  中修改如下的代码
+
+```python
+DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'acmanager',
+        'USER': 'sumover',
+        'PASSWORD': '2323180',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+```
+修改后请在MySQL中创建名为 acmanager   的数据库
+
+至此,所有的基础环境搭建完毕
+
+***
+
+### Python虚拟环境的搭建
+
+首先我们打开PyCharm,如果可以请关闭您上一次的工程,并选择check   from version    control
+
+然后把本git仓库的URL贴上(如果您fork了我就不多说了)
+
+#### Python虚拟环境的搭建
+
+如果您已经熟悉如何创建一个python的虚拟环境,请跳过
+
+如果没有,请查看下面的链接:
+
+[如何在pycharm中添加python虚拟环境？](https://jingyan.baidu.com/article/48b558e3ffeb667f39c09a41.html)
+
+####相关包的安装工作
+
+在PyCharm中打开requirement.txt 然后根据IDE的提示进行相关包的安装工作.
+这可能需要一段时间.
+
+***
+
+### Django服务器配置
+
+打开Edit configuration..
+
+这时候大概是没啥大问题的,把端口号改成8008就可以了
+
+PyCharm会自动选择虚拟环境
+
+点运行,查看结果
+
+***
+
+至此,acmanager-backend服务器的基础配置完成.
+
+~~我觉得我写的够正式了~~

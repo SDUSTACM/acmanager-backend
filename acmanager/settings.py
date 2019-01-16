@@ -88,8 +88,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'acmanager',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'USER': 'sumover',
+        'PASSWORD': '2323180',
         'HOST': 'localhost',
         'PORT': '3306',
     }
