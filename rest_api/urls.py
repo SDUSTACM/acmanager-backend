@@ -22,11 +22,13 @@ from rest_api.views.NotificationView import MessageView, VerifyView
 from rest_api.views.UserView import LoginView, RegisterView, UserProfileView, ApplicationView, \
     SessionView, LogoutView, UserManagerView, RoleManagerView, ResetPasswordView
 from rest_api.views.TrainingView import TrainingView, TrainingStageView, StageContestView
+from rest_api.views.View import AnnouncementView
 
 router = routers.SimpleRouter()
 # router.register('users/profile', UserProfileView, base_name='users-profile')
 router.register('trainings', TrainingView, base_name='training-view')
 # router.register('stages', StageView, base_name='stage-view')
+router.register('announcements', AnnouncementView, base_name='announcement-view')
 
 
 training_router = routers.NestedSimpleRouter(router, r'trainings', lookup='training')
