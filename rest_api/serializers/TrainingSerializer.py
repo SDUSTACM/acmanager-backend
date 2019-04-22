@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from rest_api.models.Training import Training, Stage, Contest
+from rest_api.models.Training import Training, Stage, Contest, Round
 
 
 class TrainingListSerializer(serializers.ListSerializer):
@@ -53,7 +53,8 @@ class StageListSerializer(serializers.ModelSerializer):
 class TrainingStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stage
-        fields= ('id', 'name', 'description', 'training', 'create_user', 'create_time')
+        fields = '__all__'
+        # fields= ('id', 'name', 'description', 'training', 'create_user', 'create_time')
         extra_kwargs = {
             'id': {'read_only': True},
             'create_user': {'read_only': True },
@@ -71,10 +72,32 @@ class TrainingStageSerializer(serializers.ModelSerializer):
         return stage
 
 
+class TrainingRoundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stage
+        # exclude = ('')
+        fields= ('id', 'name', 'description', 'training', 'create_user', 'create_time')
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'create_user': {'read_only': True },
+            'create_time': {'read_only': True },
+            'training': {'read_only': True }
+        }
+
+    def create(self, validated_data):
+        _round = Round(name=validated_data.get("name"),
+                    description=validated_data.get("description"),
+                    training_id=validated_data.get("training_id"),
+                    create_user=validated_data["create_user"]
+                      )
+        _round.save()
+        return _round
+
+
 class StageContestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contest
-        fields = ('id', 'name', 'description', 'stage', 'create_user', 'create_time')
+        fields = ('id', 'name', 'description', 'stage','create_user', 'create_time')
         extra_kwargs = {
             'id': {'read_only': True },
             'create_user': {'read_only': True },

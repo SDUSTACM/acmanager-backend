@@ -1,9 +1,9 @@
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
 
-from rest_api.models.Training import Training, Stage, Contest
+from rest_api.models.Training import Training, Stage, Contest, Round
 from rest_api.serializers.TrainingSerializer import TrainingListSerializer, TrainingCreateSerializer, \
-    StageListSerializer, TrainingStageSerializer, StageContestSerializer
+    StageListSerializer, TrainingStageSerializer, StageContestSerializer, TrainingRoundSerializer
 
 
 class TrainingView(viewsets.ModelViewSet):
@@ -46,6 +46,20 @@ class TrainingStageView(viewsets.ModelViewSet):
     
     def get_serializer_class(self):
         return TrainingStageSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(create_user=request.user, training_id=self.kwargs['training_pk'])
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class TrainingRoundView(viewsets.ModelViewSet):
+    def get_queryset(self):
+        return Round.objects.filter(training_id=self.kwargs['training_pk'])
+
+    def get_serializer_class(self):
+        return TrainingRoundSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

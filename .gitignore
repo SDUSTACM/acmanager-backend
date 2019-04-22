@@ -1,8 +1,5 @@
 .idea/
-db.sqlite3
-manage.py
 venv/
 __pycache__
 migrations
-plan.md
 log

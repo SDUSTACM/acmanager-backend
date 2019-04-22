@@ -21,7 +21,7 @@ from rest_framework_nested import routers
 from rest_api.views.NotificationView import MessageView, VerifyView
 from rest_api.views.UserView import LoginView, RegisterView, UserProfileView, ApplicationView, \
     SessionView, LogoutView, UserManagerView, RoleManagerView, ResetPasswordView
-from rest_api.views.TrainingView import TrainingView, TrainingStageView, StageContestView
+from rest_api.views.TrainingView import TrainingView, TrainingStageView, StageContestView, TrainingRoundView
 from rest_api.views.View import AnnouncementView
 
 router = routers.SimpleRouter()
@@ -33,6 +33,7 @@ router.register('announcements', AnnouncementView, base_name='announcement-view'
 
 training_router = routers.NestedSimpleRouter(router, r'trainings', lookup='training')
 training_router.register(r'stages', TrainingStageView, base_name='training-stage-view')
+training_router.register(r'rounds', TrainingRoundView, base_name='training-round-view')
 
 stage_router = routers.NestedSimpleRouter(training_router, r'stages', lookup='stage')
 stage_router.register(r'contests', StageContestView, base_name='training-stage-contest-view')
